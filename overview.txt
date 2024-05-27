@@ -1,0 +1,34 @@
+Menu:
+	View Patients	
+		Sort & Filter
+		Edit Patient
+		
+	Manage Transaction
+	Generate Reports
+
+Patient:
+- Attributes:
+	patient ID,
+	name, 
+	status,
+	<Treatment> treatment
+	priority
+	length of stay
+- Functions: 
+	Manage patient records (linked list)
+	Handle patient admission and discharges (stack or queue)
+
+Treatment:
+- Attributes
+	type,
+	date,
+
+Report(Patient list)
+- Functions:
+	- Sort patients
+	- Display patient status 
+	
+	
+
+
+
