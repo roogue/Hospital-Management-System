@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <iostream>
 #include <stdexcept>
 #include "structs/linkedList.h"
 
@@ -11,11 +11,11 @@ LinkedList<T>::LinkedList()
     this->size = 0;
 }
 
-template <class T>
-LinkedList<T>::~LinkedList()
-{
-    this->reset();
-}
+// template <class T>
+// LinkedList<T>::~LinkedList()
+// {
+//     this->reset();
+// }
 
 template <class T>
 void LinkedList<T>::reset()
@@ -64,7 +64,7 @@ void LinkedList<T>::deleteNode(T &data)
     }
 
     // Delete first node if matches
-    if (this->first == data)
+    if (this->first->data == data)
     {
         Node<T> *temp = this->first;
         this->first = this->first->next;
@@ -74,7 +74,7 @@ void LinkedList<T>::deleteNode(T &data)
     }
 
     Node<T> *head = this->first->next;
-    Node<T> *trail = this.first;
+    Node<T> *trail = this->first;
     while (head != nullptr)
     {
         if (head->data == data)
@@ -92,7 +92,7 @@ void LinkedList<T>::deleteNode(T &data)
 }
 
 template <class T>
-T LinkedList<T>::getData(int index)
+T *LinkedList<T>::getData(int index)
 {
     if (this->isEmpty())
     {
@@ -105,10 +105,11 @@ T LinkedList<T>::getData(int index)
     {
         if (currentIndex == index)
         {
-            return temp->data;
+            T *dataPtr = &temp->data;
+            return dataPtr;
         }
-        temp = temp->next;
 
+        temp = temp->next;
         currentIndex++;
     }
 
@@ -116,7 +117,7 @@ T LinkedList<T>::getData(int index)
 };
 
 template <class T>
-T LinkedList<T>::getData(T &data)
+T *LinkedList<T>::getData(T &data)
 {
     if (this->isEmpty())
     {
@@ -128,7 +129,8 @@ T LinkedList<T>::getData(T &data)
     {
         if (temp->data == data)
         {
-            return temp->data;
+            T *dataPtr = &temp->data;
+            return dataPtr;
         }
         temp = temp->next;
     }

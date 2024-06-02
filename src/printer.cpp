@@ -26,8 +26,8 @@ void Printer::printHeader()
 
         for (int i = 0; i < size; i++)
         {
-            Handler::ErrorStruct error = this->client.errorHandler.getError(i);
-            std::cout << "Warning: " << error.message << std::endl;
+            Handler::ErrorStruct *error = this->client.errorHandler.getError(i);
+            std::cout << "Warning: " << error->message << std::endl;
         }
         this->printDivider();
         this->client.errorHandler.resetError();

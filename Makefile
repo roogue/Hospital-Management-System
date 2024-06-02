@@ -2,7 +2,7 @@ CC = g++
 
 SRC_DIR = src
 
-SRCS = $(SRC_DIR)/printer.cpp $(SRC_DIR)/errorHandler.cpp $(SRC_DIR)/inputHandler.cpp $(SRC_DIR)/patient.cpp $(SRC_DIR)/patientManager.cpp $(SRC_DIR)/client.cpp $(SRC_DIR)/main.cpp 
+SRCS = $(SRC_DIR)/printer.cpp $(SRC_DIR)/errorHandler.cpp $(SRC_DIR)/inputHandler.cpp $(SRC_DIR)/treatment.cpp $(SRC_DIR)/patient.cpp $(SRC_DIR)/patientManager.cpp $(SRC_DIR)/client.cpp $(SRC_DIR)/main.cpp 
 
 TARGET_DIR = build
 

@@ -79,7 +79,7 @@ void OrderedLinkedList<T>::deleteNode(T &data)
 }
 
 template <class T>
-T OrderedLinkedList<T>::getData(T &data)
+T *OrderedLinkedList<T>::getData(T &data)
 {
     if (this->isEmpty())
     {
@@ -96,7 +96,8 @@ T OrderedLinkedList<T>::getData(T &data)
 
         if (temp->data == data)
         {
-            return temp->data;
+            T *dataPtr = &temp->data;
+            return dataPtr;
         }
         temp = temp->next;
     }

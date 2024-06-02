@@ -42,9 +42,9 @@ namespace Manager
         void printPatientDetails(HMS::Patient patient, HMS::Treatment latestTreatment);
 
         int getPatientSize();
-        HMS::Patient getPatient(int index);
-        HMS::Patient getPatient(HMS::Patient patient);
-        PatientManagerError searchPatientById(HMS::Patient &patient, int id);
+        HMS::Patient *getPatient(int index);
+        HMS::Patient *getPatient(HMS::Patient patient);
+        PatientManagerError searchPatientById(HMS::Patient *&patient, int id);
 
     private:
         HMS::Client &client;

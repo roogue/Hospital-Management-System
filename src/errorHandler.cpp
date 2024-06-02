@@ -7,12 +7,12 @@ using namespace Handler;
 void ErrorHandler::addError(int errorCode)
 {
     ErrorStruct searchStruct = {errorCode}; // There's no need the error messages
-    ErrorStruct error = this->registers.getData(searchStruct);
+    ErrorStruct *error = this->registers.getData(searchStruct);
 
-    this->errors.addNode(error);
+    this->errors.addNode(*error);
 };
 
-ErrorStruct ErrorHandler::getError(int errorCode)
+ErrorStruct *ErrorHandler::getError(int errorCode)
 {
     return this->errors.getData(errorCode);
 }

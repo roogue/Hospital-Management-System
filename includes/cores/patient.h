@@ -3,38 +3,10 @@
 #include <iostream>
 #include "handlers/inputHandler.h"
 #include "structs/orderedLinkedList.h"
+#include "cores/treatment.h"
 
 namespace HMS
 {
-    enum TreatmentType
-    {
-        Symptomatic,
-        Constipation,
-        Diarrhoea,
-        Hemostasis,
-        Other
-    };
-
-    extern const std::string TreatmentTypeLookUp[];
-    extern const int TreatmentTypeSize;
-    struct Treatment
-    {
-        TreatmentType type;
-        std::string otherType;
-        Handler::Date appointment;
-        int dayOfStay;
-        int priority;
-
-        bool operator==(const Treatment &other);
-        bool operator!=(const Treatment &other);
-        bool operator>=(const Treatment &other);
-        bool operator>(const Treatment &other);
-        bool operator<=(const Treatment &other);
-        bool operator<(const Treatment &other);
-
-        std::string getTreatmentType();
-    };
-
     enum PatientStatus
     {
         Admitted,
@@ -59,7 +31,7 @@ namespace HMS
 
         void addTreatment(Treatment treatment);
         OrderedLinkedList<Treatment> getTreatments();
-        Treatment getLatestTreatment();
+        Treatment *getLatestTreatment();
 
     private:
         unsigned int id;

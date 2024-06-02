@@ -40,7 +40,7 @@ namespace Handler
     {
     public:
         void addError(int errorCode);
-        ErrorStruct getError(int errorCode);
+        ErrorStruct *getError(int errorCode);
         void resetError();
         int getErrorSize();
 

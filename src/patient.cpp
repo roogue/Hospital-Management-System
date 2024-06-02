@@ -4,36 +4,6 @@
 
 using namespace HMS;
 
-bool Treatment::operator==(const Treatment &other)
-{
-    return appointment == other.appointment;
-};
-bool Treatment::operator!=(const Treatment &other)
-{
-    return appointment != other.appointment;
-};
-bool Treatment::operator>=(const Treatment &other)
-{
-    return appointment >= other.appointment;
-};
-bool Treatment::operator>(const Treatment &other)
-{
-    return appointment > other.appointment;
-};
-bool Treatment::operator<=(const Treatment &other)
-{
-    return appointment <= other.appointment;
-};
-bool Treatment::operator<(const Treatment &other)
-{
-    return appointment < other.appointment;
-};
-
-std::string Treatment::getTreatmentType()
-{
-    return this->type == TreatmentType::Other ? this->otherType : TreatmentTypeLookUp[this->type];
-}
-
 const std::string HMS::PatientStatusLookUp[] = {
     "Admitted",
     "Discharged",
@@ -52,7 +22,8 @@ const int HMS::TreatmentTypeSize = sizeof(HMS::TreatmentTypeLookUp) / sizeof(HMS
 Patient::Patient(int id)
     : id(id),
       name("Unknown"),
-      status(Admitted){};
+      status(Admitted),
+      treatments(){};
 
 bool Patient::operator==(Patient &other)
 {
@@ -89,8 +60,8 @@ void Patient::addTreatment(Treatment treatment)
 OrderedLinkedList<Treatment> Patient::getTreatments()
 {
     return this->treatments;
-};
-Treatment Patient::getLatestTreatment()
+}
+Treatment *Patient::getLatestTreatment()
 {
     return this->treatments.getData(0);
 }
