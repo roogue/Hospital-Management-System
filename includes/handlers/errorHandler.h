@@ -3,6 +3,8 @@
 #include <iostream>
 #include "structs/orderedLinkedList.h"
 
+using ErrorCode = int;
+
 namespace Handler
 {
     struct ErrorStruct

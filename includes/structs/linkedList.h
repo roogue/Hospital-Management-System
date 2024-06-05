@@ -3,10 +3,13 @@
 namespace List
 {
     template <class T>
-    struct Node
+    class Node
     {
+    public:
         T data;
         Node *next;
+
+        Node(T &data);
     };
 
     template <class T>
@@ -14,13 +17,15 @@ namespace List
     {
     public:
         LinkedList();
-        // virtual ~LinkedList();
+        LinkedList(const LinkedList<T> &other);
+        LinkedList<T> &operator=(const LinkedList<T> &other);
+        virtual ~LinkedList();
         void reset();
         void addNode(T &data);
         void deleteNode(T &data);
         bool isEmpty();
-        T* getData(int index);
-        T* getData(T &data);
+        T *getData(int index);
+        T *getData(T &data);
         int getSize();
 
     protected:

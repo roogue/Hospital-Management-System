@@ -5,17 +5,95 @@
 using namespace List;
 
 template <class T>
+Node<T>::Node(T &data)
+{
+    this->data = data;
+    this->next = nullptr;
+}
+
+template <class T>
 LinkedList<T>::LinkedList()
 {
     this->first = nullptr;
     this->size = 0;
 }
 
-// template <class T>
-// LinkedList<T>::~LinkedList()
-// {
-//     this->reset();
-// }
+template <class T>
+LinkedList<T>::~LinkedList()
+{
+    this->reset();
+}
+
+template <class T>
+LinkedList<T>::LinkedList(const LinkedList<T> &other)
+    : first(nullptr),
+      size(0)
+{
+    if (other.first == nullptr)
+    {
+        return; 
+    }
+
+    Node<T> *currentOther = other.first;
+    Node<T> *currentNew = nullptr;
+
+    while (currentOther != nullptr)
+    {
+        Node<T> *newNode = new Node<T>(currentOther->data);
+
+        if (first == nullptr)
+        {
+            first = newNode; 
+            currentNew = first;
+        }
+        else
+        {
+            currentNew->next = newNode;
+            currentNew = newNode;
+        }
+
+        currentOther = currentOther->next;
+        size++;
+    }
+}
+
+template <class T>
+LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    this->reset();
+
+    if (other.first != nullptr)
+    {
+        Node<T> *currentOther = other.first;
+        Node<T> *currentNew = nullptr;
+
+        while (currentOther != nullptr)
+        {
+            Node<T> *newNode = new Node<T>(currentOther->data);
+
+            if (first == nullptr)
+            {
+                first = newNode;
+                currentNew = first;
+            }
+            else
+            {
+                currentNew->next = newNode;
+                currentNew = newNode;
+            }
+
+            currentOther = currentOther->next;
+            size++;
+        }
+    }
+
+    return *this;
+}
 
 template <class T>
 void LinkedList<T>::reset()
@@ -33,7 +111,7 @@ void LinkedList<T>::reset()
 template <class T>
 void LinkedList<T>::addNode(T &data)
 {
-    Node<T> *newData = new Node<T>{data, nullptr};
+    Node<T> *newData = new Node<T>(data);
 
     // If the list is empty
     if (this->isEmpty())

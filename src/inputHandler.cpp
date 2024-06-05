@@ -10,7 +10,9 @@ using namespace Handler;
 
 bool Date::operator==(const Date &other)
 {
-    return (this->day == other.day) && (this->month == other.month) && (this->year == other.year);
+    return (this->day == other.day) &&
+           (this->month == other.month) && 
+           (this->year == other.year);
 };
 bool Date::operator!=(const Date &other)
 {
@@ -18,24 +20,24 @@ bool Date::operator!=(const Date &other)
 };
 bool Date::operator<(const Date &other)
 {
-    if (this->year < other.year)
+    if (this->year > other.year)
     {
         return true;
     }
-    if (this->year > other.year)
+    if (this->year < other.year)
     {
         return false;
     }
-    if (this->month < other.month)
+    if (this->month > other.month)
     {
         return true;
     }
-    if (this->month > other.month)
+    if (this->month < other.month)
     {
         return false;
     }
 
-    return this->day < other.day;
+    return this->day > other.day;
 };
 bool Date::operator<=(const Date &other)
 {
@@ -73,7 +75,7 @@ const int Handler::InputErrorPrefix = 0;
 const int Handler::MAX_STRING = 200;
 const int Handler::MAX_INT = INT_MAX;
 
-InputError InputHandler::getString(
+ErrorCode InputHandler::getString(
     std::string &str,
     int limitMin,
     int limitMax)
@@ -87,7 +89,7 @@ InputError InputHandler::getString(
 
     if (str.length() < limitMin)
     {
-        return STRING_TOO_FEW;
+        return getErrorCode(STRING_TOO_FEW);
     }
 
     if (str.length() > limitMax)
@@ -95,10 +97,10 @@ InputError InputHandler::getString(
         str = str.substr(0, limitMax);
     }
 
-    return NO_INPUT_ERR;
+    return getErrorCode(NO_INPUT_ERR);
 }
 
-InputError InputHandler::getInt(int &num, int limitMin, int limitMax)
+ErrorCode InputHandler::getInt(int &num, int limitMin, int limitMax)
 {
     if (limitMax < limitMin)
     {
@@ -110,25 +112,25 @@ InputError InputHandler::getInt(int &num, int limitMin, int limitMax)
     if (std::cin.bad())
     {
         this->clearBuffer();
-        return INT_INVALID;
+        return getErrorCode(INT_INVALID);
     }
 
     this->clearBuffer();
 
     if (num < limitMin)
     {
-        return INT_TOO_SMALL;
+        return getErrorCode(INT_TOO_SMALL);
     }
 
     if (num > limitMax)
     {
-        return INT_TOO_LARGE;
+        return getErrorCode(INT_TOO_LARGE);
     }
 
-    return NO_INPUT_ERR;
+    return getErrorCode(NO_INPUT_ERR);
 };
 
-InputError InputHandler::getDate(Date &date)
+ErrorCode InputHandler::getDate(Date &date)
 {
     std::string input;
     std::getline(std::cin, input);
@@ -139,13 +141,13 @@ InputError InputHandler::getDate(Date &date)
     {
         if (!this->isValidDate(date.day, date.month, date.year))
         {
-            return DATE_INVALID;
+            return getErrorCode(DATE_INVALID);
         }
 
-        return NO_INPUT_ERR;
+        return getErrorCode(NO_INPUT_ERR);
     }
 
-    return DATE_INVALID;
+    return getErrorCode(DATE_INVALID);
 };
 
 bool InputHandler::isLeapYear(int year)
@@ -168,6 +170,11 @@ bool InputHandler::isValidDate(int day, int month, int year)
 
     return day <= daysInMonth[month - 1];
 };
+
+ErrorCode InputHandler::getErrorCode(InputError error)
+{
+    return (InputErrorPrefix + error);
+}
 
 void InputHandler::clearBuffer()
 {

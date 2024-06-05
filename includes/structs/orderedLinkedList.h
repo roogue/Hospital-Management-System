@@ -11,7 +11,7 @@ namespace List
         void addNode(T &data);
         void deleteNode(T &data);
         using LinkedList<T>::getData;
-        T* getData(T &data);
+        T *getData(T &data);
 
     protected:
         using LinkedList<T>::first;

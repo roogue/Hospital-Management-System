@@ -28,9 +28,12 @@ namespace HMS
 
         void setStatus(PatientStatus status);
         PatientStatus getStatus();
+        std::string getFormattedStatus();
 
         void addTreatment(Treatment treatment);
-        OrderedLinkedList<Treatment> getTreatments();
+        void deleteTreatment(Treatment treatment);
+        int getTreatmentsSize();
+        Treatment *getTreatment(int index);
         Treatment *getLatestTreatment();
 
     private:

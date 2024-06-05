@@ -23,7 +23,9 @@ Patient::Patient(int id)
     : id(id),
       name("Unknown"),
       status(Admitted),
-      treatments(){};
+      treatments(),
+      admissions(),
+      discharges(){};
 
 bool Patient::operator==(Patient &other)
 {
@@ -52,16 +54,33 @@ PatientStatus Patient::getStatus()
 {
     return this->status;
 };
+std::string Patient::getFormattedStatus()
+{
+    return HMS::PatientStatusLookUp[this->getStatus()];
+}
 
 void Patient::addTreatment(Treatment treatment)
 {
     this->treatments.addNode(treatment);
 }
-OrderedLinkedList<Treatment> Patient::getTreatments()
+void Patient::deleteTreatment(Treatment treatment)
 {
-    return this->treatments;
+    this->treatments.deleteNode(treatment);
+}
+int Patient::getTreatmentsSize()
+{
+    return this->treatments.getSize();
+}
+Treatment *Patient::getTreatment(int index)
+{
+    return this->treatments.getData(index);
 }
 Treatment *Patient::getLatestTreatment()
 {
+    if (treatments.isEmpty())
+    {
+        return nullptr;
+    }
+
     return this->treatments.getData(0);
 }

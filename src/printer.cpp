@@ -42,7 +42,7 @@ void Printer::printDivider()
 void Printer::clearConsole()
 {
 #if defined _WIN32
-    system("cls");
+    // system("cls");
 #elif defined(__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
     system("clear");
 

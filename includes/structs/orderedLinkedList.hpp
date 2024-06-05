@@ -8,12 +8,13 @@ using namespace List;
 template <class T>
 void OrderedLinkedList<T>::addNode(T &data)
 {
-    Node<T> *newData = new Node<T>{data, nullptr};
+    Node<T> *newData = new Node<T>(data);
 
     if (this->isEmpty())
     {
         this->first = newData;
         this->size++;
+
         return;
     }
 
@@ -46,7 +47,7 @@ void OrderedLinkedList<T>::deleteNode(T &data)
     }
 
     // Delete first node if matches
-    if (this->first == data)
+    if (this->first->data == data)
     {
         Node<T> *temp = this->first;
         this->first = this->first->next;
@@ -56,7 +57,7 @@ void OrderedLinkedList<T>::deleteNode(T &data)
     }
 
     Node<T> *head = this->first->next;
-    Node<T> *trail = this.first;
+    Node<T> *trail = this->first;
     while (head != nullptr)
     {
         if (head->data > data)
@@ -75,7 +76,7 @@ void OrderedLinkedList<T>::deleteNode(T &data)
         head = head->next;
     }
 
-    throw std::out_of_range("Index out of range");
+    throw std::out_of_range("Node not found");
 }
 
 template <class T>

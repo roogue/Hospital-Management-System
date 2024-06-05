@@ -1,5 +1,6 @@
 #pragma once
 
+#include "handlers/errorHandler.h"
 #include <iostream>
 
 namespace Handler
@@ -41,15 +42,17 @@ namespace Handler
     class InputHandler
     {
     public:
-        InputError getString(std::string &str, int limitMin = 1, int limitMax = MAX_STRING);
+        ErrorCode getString(std::string &str, int limitMin = 1, int limitMax = MAX_STRING);
 
-        InputError getInt(int &num, int limitMin = 1, int limitMax = MAX_INT);
+        ErrorCode getInt(int &num, int limitMin = 1, int limitMax = MAX_INT);
 
-        InputError getDate(Date &date);
+        ErrorCode getDate(Date &date);
 
     private:
         bool isLeapYear(int year);
         bool isValidDate(int day, int month, int year);
+
+        ErrorCode getErrorCode(InputError error);
 
         void clearBuffer();
     };

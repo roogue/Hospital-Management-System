@@ -7,7 +7,7 @@
 #include "cores/patient.h"
 
 int main()
-{
+{    
     HMS::Client client;
 
     using Handler::InputError;
@@ -23,7 +23,7 @@ int main()
              << "4) Exit" << endl;
         cout << "Selection: ";
         int selection;
-        InputError err = client.inputHandler.getInt(selection, 1, 4);
+        ErrorCode err = client.inputHandler.getInt(selection, 1, 4);
         if (err)
         {
             client.errorHandler.addError(err);
