@@ -9,8 +9,9 @@ using namespace Manager;
 
 const int Manager::PatientManagerErrorPrefix = 100;
 const std::string Manager::PatientManagerErrorMessage[] = {
-    "No error occurred",
+    "No PM error occurred",
     "Cannot find patient with the Id",
+    "Cannot find patient with the name",
     "The patient list is empty",
     "The treatment list is empty"};
 const int Manager::PatientManagerErrorMessageSize = sizeof(Manager::PatientManagerErrorMessage) / sizeof(Manager::PatientManagerErrorMessage[0]);
@@ -22,23 +23,24 @@ PatientManager::PatientManager(HMS::Client &client)
 
 void PatientManager::managePatients()
 {
-    using Handler::InputError;
-    using HMS::OptionsMainMenu;
+    using Manager::OptionsManagePatients;
     using std::cout, std::endl;
 
+    List::LinkedList<HMS::Patient> currentPatientList = this->patientList;
     bool managePatientsLoop = true;
     while (managePatientsLoop)
     {
         this->client.printer->printHeader();
-        this->printPatientList();
+        this->printPatientList(currentPatientList);
 
         cout << "1) Add Patient" << endl
              << "2) View Patient" << endl
-             << "3) Exit" << endl
+             << "3) Search Patient" << endl
+             << "4) Exit" << endl
              << "Selection: ";
         int selection;
-        int err = this->client.inputHandler.getInt(selection, 1, 3);
-        if (err != InputError::NO_INPUT_ERR)
+        int err = this->client.inputHandler.getInt(selection, 1, 4);
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -53,18 +55,15 @@ void PatientManager::managePatients()
             this->promptPatientName(newPatient);
             this->promptPatientStatus(newPatient);
 
-            if (newPatient.getStatus() == HMS::PatientStatus::Admitted)
-            {
-                this->promptPatientTreatment(newPatient);
-            }
-
             this->patientList.addNode(newPatient);
+
+            currentPatientList = this->patientList;
 
             break;
         }
         case OptionsManagePatients::ViewPatient:
         {
-            int patientSize = this->getPatientSize();
+            int patientSize = currentPatientList.getSize();
             if (!patientSize)
             {
                 this->client.errorHandler.addError(getErrorCode(PATIENT_LIST_EMPTY));
@@ -72,19 +71,19 @@ void PatientManager::managePatients()
             }
 
             this->client.printer->printHeader();
-            this->printPatientList();
+            this->printPatientList(currentPatientList);
 
             cout << "Choose a patient by ID: ";
             int id;
             int err = this->client.inputHandler.getInt(id, 1, idIndex);
-            if (err != InputError::NO_INPUT_ERR)
+            if (err != this->client.inputHandler.noErrorCode())
             {
                 this->client.errorHandler.addError(err);
                 continue;
             }
 
             HMS::Patient *patient;
-            int pmErr = this->searchPatientById(patient, id);
+            int pmErr = this->searchPatient(patient, id);
             if (pmErr != getErrorCode(NO_PATIENT_MANAGER_ERR))
             {
                 this->client.errorHandler.addError(pmErr);
@@ -93,6 +92,20 @@ void PatientManager::managePatients()
 
             this->editPatient(*patient);
 
+            currentPatientList = this->patientList;
+
+            break;
+        }
+        case OptionsManagePatients::SearchPatient:
+        {
+            int patientSize = this->getPatientSize();
+            if (!patientSize)
+            {
+                this->client.errorHandler.addError(getErrorCode(PATIENT_LIST_EMPTY));
+                continue;
+            }
+
+            this->manageSearchPatient(currentPatientList);
             break;
         }
         case OptionsManagePatients::ExitManagePatients:
@@ -104,9 +117,124 @@ void PatientManager::managePatients()
     }
 };
 
+void PatientManager::manageSearchPatient(LinkedList<HMS::Patient> &patientList)
+{
+    using Manager::OptionsManageSearchPatient;
+    using std::cout, std::endl;
+
+    ErrorCode err = this->client.inputHandler.noErrorCode();
+    ErrorCode pmErr = this->noErrorCode();
+    do
+    {
+        this->client.printer->printHeader();
+        this->printPatientList(this->patientList);
+
+        cout << "Search patients by " << endl
+             << "1) Name" << endl
+             << "2) Status" << endl
+             << "3) Treatment Type" << endl
+             << "Selection: ";
+        int selection;
+        err = this->client.inputHandler.getInt(selection, 1, 3);
+        if (err != this->client.inputHandler.noErrorCode())
+        {
+            this->client.errorHandler.addError(err);
+            continue;
+        }
+
+        patientList.reset();
+        this->client.printer->printHeader();
+        this->printPatientList(this->patientList);
+
+        switch (selection)
+        {
+        case OptionsManageSearchPatient::SearchByName:
+        {
+            cout << "Patient name to search: ";
+            std::string name;
+            err = this->client.inputHandler.getString(name);
+            if (err != this->client.inputHandler.noErrorCode())
+            {
+                this->client.errorHandler.addError(err);
+                continue;
+            }
+
+            pmErr = searchPatient(patientList, name);
+            if (pmErr != this->noErrorCode())
+            {
+                this->client.errorHandler.addError(pmErr);
+                continue;
+            }
+            break;
+        }
+        case OptionsManageSearchPatient::SearchByStatus:
+        {
+            cout << "Patient status to search: " << endl;
+            for (int i = 0; i < HMS::PatientStatusSize; i++)
+            {
+                cout << i + 1 << ") " << HMS::PatientStatusLookUp[i] << endl;
+            }
+            cout << "Selection: ";
+            int selection;
+            err = this->client.inputHandler.getInt(selection, 1, HMS::PatientStatusSize);
+            if (err != this->client.inputHandler.noErrorCode())
+            {
+                this->client.errorHandler.addError(err);
+                continue;
+            }
+
+            pmErr = searchPatient(patientList, HMS::PatientStatus(selection - 1));
+            if (pmErr != this->noErrorCode())
+            {
+                this->client.errorHandler.addError(pmErr);
+                continue;
+            }
+            break;
+        }
+        case OptionsManageSearchPatient::SearchByTreatmentType:
+        {
+            cout << "Patient treatment type to search: " << endl;
+            for (int i = 0; i < HMS::TreatmentTypeSize; i++)
+            {
+                cout << i + 1 << ") " << HMS::TreatmentTypeLookUp[i] << endl;
+            }
+            cout << "Selection: ";
+            int selection;
+            err = this->client.inputHandler.getInt(selection, 1, HMS::TreatmentTypeSize);
+            if (err != this->client.inputHandler.noErrorCode())
+            {
+                this->client.errorHandler.addError(err);
+                continue;
+            }
+
+            HMS::TreatmentType treatmentType = HMS::TreatmentType(selection - 1);
+            std::string otherTreatmentType = "";
+            if (treatmentType == HMS::TreatmentType::Other)
+            {
+                cout << "Other treatment type: ";
+                err = this->client.inputHandler.getString(otherTreatmentType);
+                if (err != this->client.inputHandler.noErrorCode())
+                {
+                    this->client.errorHandler.addError(err);
+                    continue;
+                }
+            }
+
+            pmErr = searchPatient(patientList, treatmentType, otherTreatmentType);
+            if (pmErr != this->noErrorCode())
+            {
+                this->client.errorHandler.addError(pmErr);
+                continue;
+            }
+            break;
+        }
+        }
+
+    } while (err);
+}
+
 void PatientManager::editPatient(HMS::Patient &patient)
 {
-    using Handler::InputError;
     using Manager::OptionsEditPatient;
     using std::cout, std::endl;
 
@@ -124,7 +252,7 @@ void PatientManager::editPatient(HMS::Patient &patient)
              << "Selection: ";
         int selection;
         int err = this->client.inputHandler.getInt(selection, 1, 5);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -162,7 +290,6 @@ void PatientManager::editPatient(HMS::Patient &patient)
 
 void PatientManager::manageTreatments(HMS::Patient &patient)
 {
-    using Handler::InputError;
     using Manager::OptionsManageTreatment;
     using std::cout, std::endl;
 
@@ -178,7 +305,7 @@ void PatientManager::manageTreatments(HMS::Patient &patient)
              << "Selection: ";
         int selection;
         int err = this->client.inputHandler.getInt(selection, 1, 3);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -206,7 +333,7 @@ void PatientManager::manageTreatments(HMS::Patient &patient)
             cout << "Choose treatment by index: ";
             int id;
             int err = this->client.inputHandler.getInt(id, 1, treatmentSize);
-            if (err != InputError::NO_INPUT_ERR)
+            if (err != this->client.inputHandler.noErrorCode())
             {
                 this->client.errorHandler.addError(err);
                 continue;
@@ -226,7 +353,6 @@ void PatientManager::manageTreatments(HMS::Patient &patient)
 }
 void PatientManager::editTreatment(HMS::Treatment &treatment, HMS::Patient &patient)
 {
-    using Handler::InputError;
     using Manager::OptionsEditTreatment;
     using std::cout, std::endl;
 
@@ -245,7 +371,7 @@ void PatientManager::editTreatment(HMS::Treatment &treatment, HMS::Patient &pati
              << "Selection: ";
         int selection;
         int err = this->client.inputHandler.getInt(selection, 1, 6);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -286,12 +412,12 @@ void PatientManager::editTreatment(HMS::Treatment &treatment, HMS::Patient &pati
     }
 };
 
-void PatientManager::printPatientList()
+void PatientManager::printPatientList(LinkedList<HMS::Patient> patientList)
 {
     using std::cout, std::endl, std::setw, std::left;
 
     cout << "Patient List:" << endl;
-    int patientSize = this->patientList.getSize();
+    int patientSize = patientList.getSize();
     if (!patientSize)
     {
         cout << " - Patient list is empty - " << endl;
@@ -305,7 +431,7 @@ void PatientManager::printPatientList()
              << endl;
         for (int i = 0; i < patientSize; i++)
         {
-            HMS::Patient *patient = this->patientList.getData(i);
+            HMS::Patient *patient = patientList.getData(i);
             cout << "|" << setw(4) << patient->getId() << "|"
                  << setw(19) << patient->getName().substr(0, 19) << "|"
                  << setw(11) << HMS::PatientStatusLookUp[patient->getStatus()] << "|"
@@ -422,7 +548,7 @@ HMS::Patient *PatientManager::getPatient(HMS::Patient patient)
     return this->patientList.getData(patient);
 };
 
-ErrorCode PatientManager::searchPatientById(HMS::Patient *&patient, int id)
+ErrorCode PatientManager::searchPatient(HMS::Patient *&patient, int id)
 {
     for (int i = 0; i < this->getPatientSize(); i++)
     {
@@ -437,6 +563,79 @@ ErrorCode PatientManager::searchPatientById(HMS::Patient *&patient, int id)
     return getErrorCode(PATIENT_ID_NOT_FOUND);
 }
 
+ErrorCode PatientManager::searchPatient(LinkedList<HMS::Patient> &patientList, std::string name)
+{
+    for (int i = 0; i < this->getPatientSize(); i++)
+    {
+        HMS::Patient *currentPatient = this->getPatient(i);
+        if (currentPatient->getName() == name)
+        {
+            patientList.addNode(*currentPatient);
+        }
+    }
+
+    if (!patientList.isEmpty())
+    {
+        return getErrorCode(NO_PATIENT_MANAGER_ERR);
+    }
+
+    return getErrorCode(NO_PATIENT_MANAGER_ERR);
+}
+
+ErrorCode PatientManager::searchPatient(LinkedList<HMS::Patient> &patientList, HMS::PatientStatus status)
+{
+    for (int i = 0; i < this->getPatientSize(); i++)
+    {
+        HMS::Patient *currentPatient = this->getPatient(i);
+        if (currentPatient->getStatus() == status)
+        {
+            patientList.addNode(*currentPatient);
+        }
+    }
+
+    if (!patientList.isEmpty())
+    {
+        return getErrorCode(NO_PATIENT_MANAGER_ERR);
+    }
+
+    return getErrorCode(NO_PATIENT_MANAGER_ERR);
+}
+
+ErrorCode PatientManager::searchPatient(LinkedList<HMS::Patient> &patientList, HMS::TreatmentType treatmentType, std::string otherTreatmentType)
+{
+    for (int i = 0; i < this->getPatientSize(); i++)
+    {
+        HMS::Patient *currentPatient = this->getPatient(i);
+        HMS::Treatment *latestTreatment = currentPatient->getLatestTreatment();
+        if (latestTreatment == nullptr)
+        {
+            continue;
+        }
+
+        if (latestTreatment->getTreatmentType() != HMS::TreatmentType::Other)
+        {
+            if (latestTreatment->getTreatmentType() == treatmentType)
+            {
+                patientList.addNode(*currentPatient);
+            }
+        }
+        else
+        {
+            if (latestTreatment->getOtherTreatmentType() == otherTreatmentType)
+            {
+                patientList.addNode(*currentPatient);
+            }
+        }
+    }
+
+    if (!patientList.isEmpty())
+    {
+        return getErrorCode(NO_PATIENT_MANAGER_ERR);
+    }
+
+    return getErrorCode(NO_PATIENT_MANAGER_ERR);
+}
+
 int PatientManager::generatePatientId()
 {
     return ++this->idIndex;
@@ -444,11 +643,10 @@ int PatientManager::generatePatientId()
 
 void PatientManager::promptPatientName(HMS::Patient &patient)
 {
-    using Handler::InputError;
     using std::cout, std::endl;
 
     std::string name;
-    int err = InputError::NO_INPUT_ERR;
+    int err = this->client.inputHandler.noErrorCode();
     do
     {
         this->client.printer->printHeader();
@@ -456,7 +654,7 @@ void PatientManager::promptPatientName(HMS::Patient &patient)
 
         cout << "Patient Name: ";
         err = this->client.inputHandler.getString(name);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
         }
@@ -465,13 +663,21 @@ void PatientManager::promptPatientName(HMS::Patient &patient)
     patient.setName(name);
 };
 
+ErrorCode PatientManager::getErrorCode(PatientManagerError error)
+{
+    return (PatientManagerErrorPrefix + error);
+}
+ErrorCode PatientManager::noErrorCode()
+{
+    return PatientManagerErrorPrefix + PatientManagerError::NO_PATIENT_MANAGER_ERR;
+}
+
 void PatientManager::promptPatientStatus(HMS::Patient &patient)
 {
-    using Handler::InputError;
     using std::cout, std::endl;
 
     HMS::PatientStatus status;
-    int err = InputError::NO_INPUT_ERR;
+    int err = this->client.inputHandler.noErrorCode();
     do
     {
         this->client.printer->printHeader();
@@ -485,7 +691,7 @@ void PatientManager::promptPatientStatus(HMS::Patient &patient)
         cout << "Selection: ";
         int selection;
         err = this->client.inputHandler.getInt(selection, 1, HMS::PatientStatusSize);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -500,10 +706,9 @@ void PatientManager::promptPatientStatus(HMS::Patient &patient)
 
 void PatientManager::promptPatientTreatment(HMS::Patient &patient)
 {
-    using Handler::InputError;
     using std::cout, std::endl;
 
-    int err = InputError::NO_INPUT_ERR;
+    int err = this->client.inputHandler.noErrorCode();
 
     HMS::Treatment treatment;
 
@@ -517,10 +722,9 @@ void PatientManager::promptPatientTreatment(HMS::Patient &patient)
 
 void PatientManager::promptTreatmentType(HMS::Treatment &treatment)
 {
-    using Handler::InputError;
     using std::cout, std::endl;
 
-    int err = InputError::NO_INPUT_ERR;
+    int err = this->client.inputHandler.noErrorCode();
 
     int treatmentTypeSelection;
     do
@@ -535,7 +739,7 @@ void PatientManager::promptTreatmentType(HMS::Treatment &treatment)
         }
         cout << "Selection: ";
         err = this->client.inputHandler.getInt(treatmentTypeSelection, 1, HMS::TreatmentTypeSize);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -556,7 +760,7 @@ void PatientManager::promptTreatmentType(HMS::Treatment &treatment)
 
         cout << "Specify other treatment type: ";
         err = this->client.inputHandler.getString(otherType);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -567,10 +771,9 @@ void PatientManager::promptTreatmentType(HMS::Treatment &treatment)
 
 void PatientManager::promptTreatmentAppointment(HMS::Treatment &treatment)
 {
-    using Handler::InputError;
     using std::cout, std::endl;
 
-    int err = InputError::NO_INPUT_ERR;
+    int err = this->client.inputHandler.noErrorCode();
 
     Handler::Date appointment;
     do
@@ -580,7 +783,7 @@ void PatientManager::promptTreatmentAppointment(HMS::Treatment &treatment)
 
         cout << "Treatment appointment date (DD/MM/YYYY): ";
         err = this->client.inputHandler.getDate(appointment);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -592,10 +795,9 @@ void PatientManager::promptTreatmentAppointment(HMS::Treatment &treatment)
 
 void PatientManager::promptTreatmentDayOfStay(HMS::Treatment &treatment)
 {
-    using Handler::InputError;
     using std::cout, std::endl;
 
-    int err = InputError::NO_INPUT_ERR;
+    int err = this->client.inputHandler.noErrorCode();
 
     int dayOfStay;
     do
@@ -605,7 +807,7 @@ void PatientManager::promptTreatmentDayOfStay(HMS::Treatment &treatment)
 
         cout << "Patient length of stay (day): ";
         err = this->client.inputHandler.getInt(dayOfStay);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -617,10 +819,9 @@ void PatientManager::promptTreatmentDayOfStay(HMS::Treatment &treatment)
 
 void PatientManager::promptTreatmentPriority(HMS::Treatment &treatment)
 {
-    using Handler::InputError;
     using std::cout, std::endl;
 
-    int err = InputError::NO_INPUT_ERR;
+    int err = this->client.inputHandler.noErrorCode();
 
     int priority;
     do
@@ -630,7 +831,7 @@ void PatientManager::promptTreatmentPriority(HMS::Treatment &treatment)
 
         cout << "Patient priority: ";
         err = this->client.inputHandler.getInt(priority);
-        if (err != InputError::NO_INPUT_ERR)
+        if (err != this->client.inputHandler.noErrorCode())
         {
             this->client.errorHandler.addError(err);
             continue;
@@ -639,8 +840,3 @@ void PatientManager::promptTreatmentPriority(HMS::Treatment &treatment)
     } while (err);
     treatment.setPriority(priority);
 };
-
-ErrorCode PatientManager::getErrorCode(PatientManagerError error)
-{
-    return (PatientManagerErrorPrefix + error);
-}

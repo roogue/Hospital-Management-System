@@ -176,6 +176,11 @@ ErrorCode InputHandler::getErrorCode(InputError error)
     return (InputErrorPrefix + error);
 }
 
+ErrorCode InputHandler::noErrorCode()
+{
+    return (InputErrorPrefix + InputError::NO_INPUT_ERR);
+}
+
 void InputHandler::clearBuffer()
 {
     std::cin.clear(); // clear error flags

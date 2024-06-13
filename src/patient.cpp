@@ -84,3 +84,12 @@ Treatment *Patient::getLatestTreatment()
 
     return this->treatments.getData(0);
 }
+
+void Patient::addAdmissionDate(Handler::Date date)
+{
+    this->admissions.addNode(date);
+}
+void Patient::addDischargeDate(Handler::Date date)
+{
+    this->discharges.addNode(date);
+}

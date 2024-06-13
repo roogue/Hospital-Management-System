@@ -48,12 +48,11 @@ namespace Handler
 
         ErrorCode getDate(Date &date);
 
+        ErrorCode getErrorCode(InputError error);
+        ErrorCode noErrorCode();
     private:
         bool isLeapYear(int year);
         bool isValidDate(int day, int month, int year);
-
-        ErrorCode getErrorCode(InputError error);
-
         void clearBuffer();
     };
 }

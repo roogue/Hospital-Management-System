@@ -36,6 +36,9 @@ namespace HMS
         Treatment *getTreatment(int index);
         Treatment *getLatestTreatment();
 
+        void addAdmissionDate(Handler::Date date);
+        void addDischargeDate(Handler::Date date);
+
     private:
         unsigned int id;
         std::string name;

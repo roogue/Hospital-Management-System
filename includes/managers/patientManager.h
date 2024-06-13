@@ -17,7 +17,14 @@ namespace Manager
     {
         AddPatient = 1,
         ViewPatient,
+        SearchPatient,
         ExitManagePatients
+    };
+    enum OptionsManageSearchPatient
+    {
+        SearchByName = 1,
+        SearchByStatus,
+        SearchByTreatmentType
     };
     enum OptionsEditPatient
     {
@@ -48,6 +55,7 @@ namespace Manager
     {
         NO_PATIENT_MANAGER_ERR,
         PATIENT_ID_NOT_FOUND,
+        PATIENT_NAME_NOT_FOUND,
         PATIENT_LIST_EMPTY,
         TREATMENT_LIST_EMPTY
     };
@@ -59,11 +67,12 @@ namespace Manager
     public:
         PatientManager(HMS::Client &client);
         void managePatients();
+        void manageSearchPatient(LinkedList<HMS::Patient> &patientList);
         void editPatient(HMS::Patient &patient);
         void manageTreatments(HMS::Patient &patient);
         void editTreatment(HMS::Treatment &treatment, HMS::Patient &patient);
 
-        void printPatientList();
+        void printPatientList(LinkedList<HMS::Patient> patientList);
         void printPatientDetails(HMS::Patient patient);
         void printPatientDetails(HMS::Patient patient, HMS::Treatment latestTreatment);
         void printTreatmentList(HMS::Patient patient);
@@ -72,7 +81,13 @@ namespace Manager
         int getPatientSize();
         HMS::Patient *getPatient(int index);
         HMS::Patient *getPatient(HMS::Patient patient);
-        ErrorCode searchPatientById(HMS::Patient *&patient, int id);
+        ErrorCode searchPatient(HMS::Patient *&patient, int id);
+        ErrorCode searchPatient(LinkedList<HMS::Patient> &patientList, std::string name);
+        ErrorCode searchPatient(LinkedList<HMS::Patient> &patientList, HMS::PatientStatus status);
+        ErrorCode searchPatient(LinkedList<HMS::Patient> &patientList, HMS::TreatmentType treatmentType, std::string otherTreatmentType);
+
+        ErrorCode getErrorCode(PatientManagerError error);
+        ErrorCode noErrorCode();
 
     private:
         HMS::Client &client;
@@ -89,7 +104,5 @@ namespace Manager
         void promptTreatmentAppointment(HMS::Treatment &treatment);
         void promptTreatmentDayOfStay(HMS::Treatment &treatment);
         void promptTreatmentPriority(HMS::Treatment &treatment);
-
-        ErrorCode getErrorCode(PatientManagerError error);
     };
 };
