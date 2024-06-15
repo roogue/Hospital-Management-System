@@ -48,6 +48,8 @@ namespace Handler
 
         ErrorCode getDate(Date &date);
 
+        void pause();
+
         ErrorCode getErrorCode(InputError error);
         ErrorCode noErrorCode();
     private:

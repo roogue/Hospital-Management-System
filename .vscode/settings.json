@@ -48,7 +48,8 @@
         "cstdarg": "cpp",
         "iomanip": "cpp",
         "ctime": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "cinttypes": "cpp"
     },
     "cSpell.words": [
         "Diarrhoea"

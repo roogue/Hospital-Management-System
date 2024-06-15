@@ -25,19 +25,29 @@ namespace HMS
 
         void setName(std::string name);
         std::string getName();
+        static bool searchName(Patient &patient, std::string name);
 
         void setStatus(PatientStatus status);
         PatientStatus getStatus();
         std::string getFormattedStatus();
+        static bool searchStatus(Patient &patient, HMS::PatientStatus status);
 
         void addTreatment(Treatment treatment);
         void deleteTreatment(Treatment treatment);
         int getTreatmentsSize();
         Treatment *getTreatment(int index);
         Treatment *getLatestTreatment();
+        static bool searchTreatmentType(Patient &patient, std::string treatmentType);
+        static bool compareTreatmentAppointment(Patient &patient, Patient &otherPatient);
+        static bool compareTreatmentDayOfStay(Patient &patient, Patient &otherPatient);
+        static bool compareTreatmentPriority(Patient &patient, Patient &otherPatient);
 
         void addAdmissionDate(Handler::Date date);
         void addDischargeDate(Handler::Date date);
+
+        Iterator<Treatment> getTreatmentIterator();
+        Iterator<Handler::Date> getAdmissionsIterator();
+        Iterator<Handler::Date> getDischargesIterator();
 
     private:
         unsigned int id;

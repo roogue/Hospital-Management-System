@@ -3,12 +3,15 @@
 #include "handlers/errorHandler.h"
 #include "handlers/inputHandler.h"
 #include "managers/patientManager.h"
+#include "managers/transactionManager.h"
 #include "cores/patient.h"
 
 // Forward declaration
 namespace Manager
 {
     class PatientManager;
+    class TransactionManager;
+    class ReportManager;
 }
 namespace Util
 {
@@ -34,6 +37,8 @@ namespace HMS
         Handler::ErrorHandler errorHandler;
         Handler::InputHandler inputHandler;
         Manager::PatientManager *patientManager;
+        Manager::TransactionManager *transactionManager;
+        Manager::ReportManager *reportManager;
         Util::Printer *printer;
     };
 }

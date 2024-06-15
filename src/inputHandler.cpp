@@ -171,6 +171,11 @@ bool InputHandler::isValidDate(int day, int month, int year)
     return day <= daysInMonth[month - 1];
 };
 
+void InputHandler::pause() {
+    std::string str;
+    this->getString(str);
+}
+
 ErrorCode InputHandler::getErrorCode(InputError error)
 {
     return (InputErrorPrefix + error);

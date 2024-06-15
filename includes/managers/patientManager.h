@@ -18,6 +18,7 @@ namespace Manager
         AddPatient = 1,
         ViewPatient,
         SearchPatient,
+        SortPatient,
         ExitManagePatients
     };
     enum OptionsManageSearchPatient
@@ -25,6 +26,12 @@ namespace Manager
         SearchByName = 1,
         SearchByStatus,
         SearchByTreatmentType
+    };
+    enum OptionManageSortPatient
+    {
+        SortByAppointment = 1,
+        SortByLengthOfStay,
+        SortByPriority
     };
     enum OptionsEditPatient
     {
@@ -67,24 +74,23 @@ namespace Manager
     public:
         PatientManager(HMS::Client &client);
         void managePatients();
-        void manageSearchPatient(LinkedList<HMS::Patient> &patientList);
-        void editPatient(HMS::Patient &patient);
-        void manageTreatments(HMS::Patient &patient);
-        void editTreatment(HMS::Treatment &treatment, HMS::Patient &patient);
 
+        void printPatientList();
         void printPatientList(LinkedList<HMS::Patient> patientList);
         void printPatientDetails(HMS::Patient patient);
         void printPatientDetails(HMS::Patient patient, HMS::Treatment latestTreatment);
         void printTreatmentList(HMS::Patient patient);
         void printTreatmentDetails(HMS::Treatment treatment);
 
+        int getIdIndex();
+        int generatePatientId();
+
+        void addPatient(HMS::Patient &patient);
         int getPatientSize();
         HMS::Patient *getPatient(int index);
         HMS::Patient *getPatient(HMS::Patient patient);
-        ErrorCode searchPatient(HMS::Patient *&patient, int id);
-        ErrorCode searchPatient(LinkedList<HMS::Patient> &patientList, std::string name);
-        ErrorCode searchPatient(LinkedList<HMS::Patient> &patientList, HMS::PatientStatus status);
-        ErrorCode searchPatient(LinkedList<HMS::Patient> &patientList, HMS::TreatmentType treatmentType, std::string otherTreatmentType);
+        ErrorCode getPatientById(HMS::Patient *&patient, int id);
+        Iterator<HMS::Patient> getPatientListIterator();
 
         ErrorCode getErrorCode(PatientManagerError error);
         ErrorCode noErrorCode();
@@ -94,7 +100,11 @@ namespace Manager
         LinkedList<HMS::Patient> patientList;
         int idIndex;
 
-        int generatePatientId();
+        void manageSearchPatient(LinkedList<HMS::Patient> &patientList);
+        void manageSortPatient(LinkedList<HMS::Patient> &patientList);
+        void editPatient(HMS::Patient &patient);
+        void manageTreatments(HMS::Patient &patient);
+        void editTreatment(HMS::Treatment &treatment, HMS::Patient &patient);
 
         void promptPatientName(HMS::Patient &patient);
         void promptPatientStatus(HMS::Patient &patient);
