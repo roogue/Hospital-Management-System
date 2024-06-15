@@ -28,7 +28,6 @@ namespace Manager
     enum ReportManagerError
     {
         NO_REPORT_MANAGER_ERR,
-        RM_PATIENT_ID_NOT_FOUND,
         RM_PATIENT_LIST_EMPTY,
     };
     extern const std::string ReportManagerErrorMessage[];

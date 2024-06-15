@@ -13,7 +13,6 @@ bool Event::operator<(Event &other)
 const int Manager::ReportManagerErrorPrefix = 300;
 const std::string Manager::ReportManagerErrorMessage[] = {
     "No RM error occurred",
-    "Cannot find patient with the Id",
     "Patient list is empty"};
 const int Manager::ReportManagerErrorMessageSize = sizeof(Manager::ReportManagerErrorMessage) / sizeof(Manager::ReportManagerErrorMessage[0]);
 
@@ -148,8 +147,8 @@ void ReportManager::manageReport()
                     continue;
                 }
 
-                ErrorCode rmErr = this->client.patientManager->getPatientById(patient, id);
-                if (rmErr != this->noErrorCode())
+                ErrorCode pmErr = this->client.patientManager->getPatientById(patient, id);
+                if (pmErr != this->client.patientManager->noErrorCode())
                 {
                     this->client.errorHandler.addError(err);
                     continue;

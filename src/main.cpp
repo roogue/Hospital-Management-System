@@ -25,9 +25,11 @@ void generatePatients(Manager::PatientManager *pm)
     p1.addTreatment(t1);
     d1 = {8, 1, 2024};
     p1.addDischargeDate(d1);
+    d1 = {21, 1, 2024};
+    p1.addAdmissionDate(d1);
     t1.setTreatmentType(HMS::TreatmentType::Symptomatic);
     t1.setOtherTreatmentType("");
-    d1 = {20, 1, 2024};
+    d1 = {22, 1, 2024};
     t1.setAppointment(d1);
     t1.setDayOfStay(1);
     t1.setPriority(1);
