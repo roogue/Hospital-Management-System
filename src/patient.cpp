@@ -151,7 +151,7 @@ bool Patient::compareTreatmentPriority(Patient &patient, Patient &otherPatient)
         return true;
     }
 
-    return latestTreatment->getPriority() < otherLatestTreatment->getPriority();
+    return latestTreatment->getPriority() > otherLatestTreatment->getPriority();
 }
 
 void Patient::addAdmissionDate(Handler::Date date)

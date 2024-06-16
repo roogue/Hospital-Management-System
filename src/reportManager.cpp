@@ -133,7 +133,7 @@ void ReportManager::manageReport()
 
             ErrorCode err = this->client.inputHandler.noErrorCode();
             HMS::Patient *patient;
-            do
+            while (true)
             {
                 this->client.printer->printHeader();
                 this->client.patientManager->printPatientList();
@@ -150,10 +150,12 @@ void ReportManager::manageReport()
                 ErrorCode pmErr = this->client.patientManager->getPatientById(patient, id);
                 if (pmErr != this->client.patientManager->noErrorCode())
                 {
-                    this->client.errorHandler.addError(err);
+                    this->client.errorHandler.addError(pmErr);
                     continue;
                 }
-            } while (err);
+
+                break;
+            }
 
             this->client.printer->printHeader();
             cout << "Patient Report: " << endl
