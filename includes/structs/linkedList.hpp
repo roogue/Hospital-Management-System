@@ -493,5 +493,5 @@ void LinkedList<T>::recSortList(Node<T> *&head)
 template <class T>
 Iterator<T> LinkedList<T>::iterate()
 {
-    return Iterator(this->first);
+    return Iterator<T>(this->first);
 }
