@@ -103,6 +103,17 @@ namespace HMS
         int getPriority();
 
         /**
+         * @brief Set treatment as completed.
+         */
+        void setCompleted();
+
+        /**
+         * @brief Gets the completeness of the treatment
+         * @return True if the treatment is completed, false otherwise
+         */
+        bool isCompleted();
+
+        /**
          * @brief Equality operator to compare two treatments.
          * @param other The other treatment to compare.
          * @return True if the treatments are equal, false otherwise.
@@ -150,5 +161,6 @@ namespace HMS
         Handler::Date appointment; /**< The appointment date for the treatment */
         int dayOfStay;             /**< The number of days of stay for the treatment */
         int priority;              /**< The priority of the treatment */
+        bool completed;            /**< The completeness of the treatment */
     };
 }

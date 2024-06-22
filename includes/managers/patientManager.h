@@ -217,7 +217,7 @@ namespace Manager
 
     private:
         HMS::Client &client;                  /**< Reference to the client */
-        LinkedList<HMS::Patient> patientList; /**< List of patients */
+        OrderedLinkedList<HMS::Patient> patientList; /**< List of patients */
         int idIndex;                          /**< Current patient ID index */
 
         /**
