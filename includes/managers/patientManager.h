@@ -97,7 +97,7 @@ namespace Manager
 
     private:
         HMS::Client &client;
-        LinkedList<HMS::Patient> patientList;
+        OrderedLinkedList<HMS::Patient> patientList;
         int idIndex;
 
         void manageSearchPatient(LinkedList<HMS::Patient> &patientList);

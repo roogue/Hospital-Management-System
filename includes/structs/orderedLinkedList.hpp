@@ -87,21 +87,56 @@ T *OrderedLinkedList<T>::getData(T &data)
         throw std::out_of_range("List is empty");
     }
 
-    Node<T> *temp = this->first;
-    while (temp != nullptr)
+    Node<T> *first = this->first;
+    Node<T> *last = nullptr;
+    do
     {
-        if (temp->data > data)
+        Node<T> *middle = this->getMiddle(first, last);
+
+        if (middle == nullptr)
         {
-            break;
+            return nullptr;
         }
 
-        if (temp->data == data)
+        if (middle->data == data)
         {
-            T *dataPtr = &temp->data;
-            return dataPtr;
+            return &middle->data;
         }
-        temp = temp->next;
-    }
+
+        else if (middle->data < data)
+        {
+            first = middle->next;
+        }
+        else
+        {
+            last = middle;
+        }
+
+    } while (last == nullptr || last != first);
 
     throw std::out_of_range("Index out of range");
+};
+
+template <class T>
+Node<T> *OrderedLinkedList<T>::getMiddle(Node<T> *first, Node<T> *last)
+{
+    if (first == nullptr)
+    {
+        return nullptr;
+    }
+
+    Node<T> *slow = first;
+    Node<T> *fast = first->next;
+
+    while (fast != last)
+    {
+        fast = fast->next;
+        if (fast != last)
+        {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+
+    return slow;
 };

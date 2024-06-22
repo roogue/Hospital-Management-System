@@ -20,6 +20,10 @@ namespace HMS
     public:
         Patient(int id = 0);
         bool operator==(Patient &other);
+        bool operator>(Patient &other);
+        bool operator<(Patient &other);
+        bool operator>=(Patient &other);
+        bool operator<=(Patient &other);
 
         int getId();
 

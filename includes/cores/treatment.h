@@ -35,6 +35,9 @@ namespace HMS
         void setPriority(int priority);
         int getPriority();
 
+        void setCompleted();
+        bool isCompleted();
+
         bool operator==(const Treatment &other);
         bool operator!=(const Treatment &other);
         bool operator>=(const Treatment &other);
@@ -48,5 +51,6 @@ namespace HMS
         Handler::Date appointment;
         int dayOfStay;
         int priority;
+        bool completed;
     };
 }

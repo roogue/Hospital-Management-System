@@ -7,7 +7,8 @@ Treatment::Treatment()
       otherType(""),
       appointment({0, 0, 0}),
       dayOfStay(0),
-      priority(0){};
+      priority(0),
+      completed(false) {};
 
 void Treatment::setTreatmentType(TreatmentType treatment)
 {
@@ -57,6 +58,16 @@ void Treatment::setPriority(int priority)
 int Treatment::getPriority()
 {
     return this->priority;
+};
+
+void Treatment::setCompleted()
+{
+    this->completed = true;
+};
+
+bool Treatment::isCompleted()
+{
+    return this->completed;
 };
 
 bool Treatment::operator==(const Treatment &other)

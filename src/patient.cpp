@@ -26,11 +26,31 @@ Patient::Patient(int id)
       status(Admitted),
       treatments(),
       admissions(),
-      discharges(){};
+      discharges() {};
 
 bool Patient::operator==(Patient &other)
 {
     return this->id == other.id;
+}
+
+bool Patient::operator>(Patient &other)
+{
+    return this->id > other.id;
+}
+
+bool Patient::operator<(Patient &other)
+{
+    return this->id < other.id;
+}
+
+bool Patient::operator>=(Patient &other)
+{
+    return this->id >= other.id;
+}
+
+bool Patient::operator<=(Patient &other)
+{
+    return this->id <= other.id;
 }
 
 int Patient::getId()
@@ -96,7 +116,7 @@ Treatment *Patient::getLatestTreatment()
 bool Patient::searchTreatmentType(Patient &patient, std::string treatmentType)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();
-    if (latestTreatment != nullptr)
+    if (latestTreatment != nullptr || latestTreatment->isCompleted())
     {
         return treatmentType == latestTreatment->getFormattedTreatmentType();
     }
@@ -107,13 +127,13 @@ bool Patient::searchTreatmentType(Patient &patient, std::string treatmentType)
 bool Patient::compareTreatmentAppointment(Patient &patient, Patient &otherPatient)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();
-    if (latestTreatment == nullptr)
+    if (latestTreatment == nullptr || latestTreatment->isCompleted())
     {
         return false;
     }
 
     HMS::Treatment *otherLatestTreatment = otherPatient.getLatestTreatment();
-    if (otherLatestTreatment == nullptr)
+    if (otherLatestTreatment == nullptr || otherLatestTreatment->isCompleted())
     {
         return true;
     }
@@ -124,13 +144,13 @@ bool Patient::compareTreatmentAppointment(Patient &patient, Patient &otherPatien
 bool Patient::compareTreatmentDayOfStay(Patient &patient, Patient &otherPatient)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();
-    if (latestTreatment == nullptr)
+    if (latestTreatment == nullptr || latestTreatment->isCompleted())
     {
         return false;
     }
 
     HMS::Treatment *otherLatestTreatment = otherPatient.getLatestTreatment();
-    if (otherLatestTreatment == nullptr)
+    if (otherLatestTreatment == nullptr || otherLatestTreatment->isCompleted())
     {
         return true;
     }
@@ -140,13 +160,13 @@ bool Patient::compareTreatmentDayOfStay(Patient &patient, Patient &otherPatient)
 bool Patient::compareTreatmentPriority(Patient &patient, Patient &otherPatient)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();
-    if (latestTreatment == nullptr)
+    if (latestTreatment == nullptr || latestTreatment->isCompleted())
     {
         return false;
     }
 
     HMS::Treatment *otherLatestTreatment = otherPatient.getLatestTreatment();
-    if (otherLatestTreatment == nullptr)
+    if (otherLatestTreatment == nullptr || otherLatestTreatment->isCompleted())
     {
         return true;
     }

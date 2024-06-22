@@ -19,7 +19,7 @@ const int Manager::PatientManagerErrorMessageSize = sizeof(Manager::PatientManag
 PatientManager::PatientManager(HMS::Client &client)
     : client(client),
       patientList(),
-      idIndex(0){};
+      idIndex(0) {};
 
 void PatientManager::managePatients()
 {
@@ -64,7 +64,7 @@ void PatientManager::managePatients()
         }
         case OptionsManagePatients::ViewPatient:
         {
-            int patientSize = currentPatientList.getSize();
+            int patientSize = this->getPatientSize();
             if (!patientSize)
             {
                 this->client.errorHandler.addError(getErrorCode(PATIENT_LIST_EMPTY));
@@ -476,16 +476,36 @@ void PatientManager::printPatientList(LinkedList<HMS::Patient> patientList)
              << setw(20) << left << "|Name"
              << setw(12) << left << "|Status"
              << setw(18) << left << "|Ongoing Treatment"
+             << setw(12) << left << "|Appointment"
+             << setw(15) << left << "|Length Of Stay"
+             << setw(9) << left << "|Priority|"
              << endl;
         Iterator<HMS::Patient> iterator = patientList.iterate();
         while (iterator.getData() != nullptr)
         {
             HMS::Patient *patient = iterator.getData();
+            HMS::Treatment *latestTreatment = patient->getLatestTreatment();
             cout << "|" << setw(4) << patient->getId() << "|"
                  << setw(19) << patient->getName().substr(0, 19) << "|"
-                 << setw(11) << HMS::PatientStatusLookUp[patient->getStatus()] << "|"
-                 << setw(17) << (patient->getLatestTreatment() == nullptr ? "None" : patient->getLatestTreatment()->getFormattedTreatmentType())
-                 << endl;
+                 << setw(11) << HMS::PatientStatusLookUp[patient->getStatus()] << "|";
+
+            if (latestTreatment == nullptr || latestTreatment->isCompleted())
+            {
+                cout << setw(17) << "None" << "|"
+                     << setw(11) << "" << "|"
+                     << setw(14) << "" << "|"
+                     << setw(8) << "" << "|"
+                     << endl;
+            }
+            else
+            {
+                cout << setw(17) << latestTreatment->getFormattedTreatmentType() << "|"
+                     << setw(11) << latestTreatment->getAppointment().getFormattedDate() << "|"
+                     << setw(14) << latestTreatment->getDayOfStay() << "|"
+                     << setw(8) << latestTreatment->getPriority() << "|"
+                     << endl;
+            }
+
             iterator.next();
         }
     }
@@ -724,6 +744,11 @@ void PatientManager::promptPatientStatus(HMS::Patient &patient)
     else
     {
         patient.addDischargeDate(date);
+        HMS::Treatment *latestTreatment = patient.getLatestTreatment();
+        if (latestTreatment != nullptr)
+        {
+            latestTreatment->setCompleted();
+        }
     }
 };
 

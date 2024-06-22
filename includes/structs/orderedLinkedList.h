@@ -16,6 +16,7 @@ namespace List
     protected:
         using LinkedList<T>::first;
         using LinkedList<T>::size;
+        Node<T> *getMiddle(Node<T> *first, Node<T> *last);
     };
 }
 
