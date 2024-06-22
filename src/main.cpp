@@ -188,6 +188,7 @@ int main()
     using Handler::InputError;
     using std::cout, std::endl;
 
+    // Infinite loop to continuously present the main menu until the user decides to exit
     while (true)
     {
         client.printer->printHeader();
@@ -205,6 +206,7 @@ int main()
             continue;
         }
 
+        // Switch statement to handle the user's menu selection
         switch (selection)
         {
         case HMS::OptionsMainMenu::ManagePatients:
