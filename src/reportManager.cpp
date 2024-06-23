@@ -5,18 +5,20 @@
 
 using namespace Manager;
 
+// Overloaded less-than operator for sorting purpose
 bool Event::operator<(Event &other)
 {
     return this->date < other.date;
 };
 
+// Initialize static constants for error handling in ReportManager
 const int Manager::ReportManagerErrorPrefix = 300;
 const std::string Manager::ReportManagerErrorMessage[] = {
     "No RM error occurred",
     "Patient list is empty"};
 const int Manager::ReportManagerErrorMessageSize = sizeof(Manager::ReportManagerErrorMessage) / sizeof(Manager::ReportManagerErrorMessage[0]);
 
-ReportManager::ReportManager(HMS::Client &client) : client(client){};
+ReportManager::ReportManager(HMS::Client &client) : client(client) {};
 
 void ReportManager::manageReport()
 {
@@ -28,10 +30,12 @@ void ReportManager::manageReport()
     {
         this->client.printer->printHeader();
 
+        // Display menu options
         cout << "1) Generate Overall Summary Report" << endl
              << "2) Generate Report For Patient" << endl
              << "3) Exit Manage Report" << endl
              << "Selection: ";
+        // Get user selection
         int selection;
         ErrorCode err = this->client.inputHandler.getInt(selection, 1, 3);
         if (err != this->client.inputHandler.noErrorCode())
@@ -40,6 +44,7 @@ void ReportManager::manageReport()
             continue;
         }
 
+        // Process user selection
         switch (selection)
         {
         case OptionsManageReport::GenerateOverallReport:
@@ -70,6 +75,7 @@ void ReportManager::manageReport()
                 iterator.next();
             }
 
+            // Print admitted patients
             cout << "Admitted Patient: (" << admittedPatients.getSize() << ")" << endl;
             if (admittedPatients.isEmpty())
             {
@@ -93,6 +99,7 @@ void ReportManager::manageReport()
 
             this->client.printer->printDivider();
 
+            // Print discharged patients
             cout << "Discharged Patient: (" << dischargedPatients.getSize() << ")" << endl;
             if (dischargedPatients.isEmpty())
             {
@@ -114,6 +121,7 @@ void ReportManager::manageReport()
                 }
             }
 
+            // Wait for user to continue
             this->client.printer->printDivider();
             cout << "Press 'Enter' to continue..." << endl;
             this->client.printer->printDivider();
@@ -123,6 +131,7 @@ void ReportManager::manageReport()
         }
         case OptionsManageReport::GenerateReportForPatient:
         {
+            // Ensure there are patients available to generate a report
             if (this->client.patientManager->getPatientSize() == 0)
             {
                 this->client.errorHandler.addError(this->getErrorCode(ReportManagerError::RM_PATIENT_LIST_EMPTY));
@@ -131,6 +140,7 @@ void ReportManager::manageReport()
 
             using std::cout, std::endl;
 
+            // Get a patient from the user
             ErrorCode err = this->client.inputHandler.noErrorCode();
             HMS::Patient *patient;
             while (true)
@@ -157,6 +167,7 @@ void ReportManager::manageReport()
                 break;
             }
 
+            // Print detailed patient report
             this->client.printer->printHeader();
             cout << "Patient Report: " << endl
                  << "ID: " << patient->getId() << endl
@@ -164,6 +175,7 @@ void ReportManager::manageReport()
                  << "Status: " << HMS::PatientStatusLookUp[patient->getStatus()] << endl
                  << "Treatment Timelines: " << endl;
 
+            // Gather events timelines from treatments, admissions, and discharges
             LinkedList<Event> events;
 
             Iterator<HMS::Treatment> treatmentsIterator = patient->getTreatmentIterator();
@@ -192,8 +204,10 @@ void ReportManager::manageReport()
                 dischargesIterator.next();
             }
 
+            // Sort events by date
             events.sortNodes();
 
+            // Print sorted events
             Iterator<Event> eventIterator = events.iterate();
             while (eventIterator.getData() != nullptr)
             {
@@ -203,6 +217,7 @@ void ReportManager::manageReport()
                 eventIterator.next();
             }
 
+            // Wait for user to continue
             this->client.printer->printDivider();
             cout << "Press 'Enter' to continue..." << endl;
             this->client.printer->printDivider();

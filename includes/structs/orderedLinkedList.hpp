@@ -87,6 +87,7 @@ T *OrderedLinkedList<T>::getData(T &data)
         throw std::out_of_range("List is empty");
     }
 
+    // Get the target data by using binary search algorithm.
     Node<T> *first = this->first;
     Node<T> *last = nullptr;
     do
@@ -98,16 +99,17 @@ T *OrderedLinkedList<T>::getData(T &data)
             return nullptr;
         }
 
+        // If matches the data.
         if (middle->data == data)
         {
             return &middle->data;
         }
 
-        else if (middle->data < data)
+        else if (middle->data < data) // If less than, we start from the middle.
         {
             first = middle->next;
         }
-        else
+        else // If more than, we start from the first, ends in middle.
         {
             last = middle;
         }
@@ -125,6 +127,8 @@ Node<T> *OrderedLinkedList<T>::getMiddle(Node<T> *first, Node<T> *last)
         return nullptr;
     }
 
+    // Get middle node by using two pointers, 
+    // One traverse twice faster than the other.
     Node<T> *slow = first;
     Node<T> *fast = first->next;
 

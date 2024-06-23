@@ -27,6 +27,7 @@ LinkedList<T>::LinkedList(const LinkedList<T> &other)
         return;
     }
 
+    // Creates a deep copy of the provided linked list.
     Node<T> *currentOther = other.first;
     Node<T> *currentNew = nullptr;
 
@@ -34,19 +35,19 @@ LinkedList<T>::LinkedList(const LinkedList<T> &other)
     {
         Node<T> *newNode = new Node<T>(currentOther->data);
 
-        if (first == nullptr)
+        if (this->first == nullptr) // If current list has no element yet.
         {
-            first = newNode;
-            currentNew = first;
+            this->first = newNode;
+            currentNew = this->first;
         }
-        else
+        else // Add the subsequent nodes from other list to current list
         {
             currentNew->next = newNode;
             currentNew = newNode;
         }
 
         currentOther = currentOther->next;
-        size++;
+        this->size++;
     }
 }
 
@@ -58,6 +59,7 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
         return *this;
     }
 
+    // Reset the list as if the list is not empty.
     this->reset();
 
     if (other.first != nullptr)
@@ -106,7 +108,7 @@ void LinkedList<T>::addNode(T &data)
 {
     Node<T> *newData = new Node<T>(data);
 
-    // If the list is empty
+    // If the list is empty, just point LinkedList<T>::first to the node.
     if (this->isEmpty())
     {
         this->first = newData;
@@ -114,6 +116,7 @@ void LinkedList<T>::addNode(T &data)
         return;
     }
 
+    // Else iterate through list, then attach the node at the end of the list.
     Node<T> *temp = this->first;
     while (temp->next != nullptr)
     {
@@ -158,13 +161,13 @@ void LinkedList<T>::searchNodes(LinkedList<T> &list, T compareValue)
 template <class T>
 void LinkedList<T>::sortNodes(bool (*compare)(T &a, T &b))
 {
-    this->recSortList(this->first, compare);
+    this->recSortList(this->first, compare); // call merge sort function
 };
 
 template <class T>
 void LinkedList<T>::sortNodes()
 {
-    this->recSortList(this->first);
+    this->recSortList(this->first); // call merge sort function
 };
 
 template <class T>
@@ -175,7 +178,7 @@ void LinkedList<T>::deleteNode(int index)
         throw std::out_of_range("List is empty");
     }
 
-    if (index == 0)
+    if (index == 0) // Delete first node
     {
         Node<T> *temp = this->first;
         this->first = this->first->next;
@@ -213,8 +216,7 @@ void LinkedList<T>::deleteNode(T &data)
         throw std::out_of_range("List is empty");
     }
 
-    // Delete first node if matches
-    if (this->first->data == data)
+    if (this->first->data == data) // Delete first node if matches
     {
         Node<T> *temp = this->first;
         this->first = this->first->next;
@@ -251,7 +253,7 @@ T *LinkedList<T>::getData(int index)
 
     int currentIndex = 0;
     Node<T> *temp = this->first;
-    while (temp != nullptr)
+    while (temp != nullptr) // Traverse through the list, and get the data that matches the index.
     {
         if (currentIndex == index)
         {
@@ -274,7 +276,7 @@ T *LinkedList<T>::getData(T &data)
     }
 
     Node<T> *temp = this->first;
-    while (temp != nullptr)
+    while (temp != nullptr) // Traverse through the list, and get the data that matches the data.
     {
         if (temp->data == data)
         {
@@ -304,20 +306,22 @@ void LinkedList<T>::divideList(Node<T> *head, Node<T> *&newHead)
     Node<T> *current;
     Node<T> *middle;
 
-    if (head == nullptr) // list have no node (cannot divide)
+    if (head == nullptr) // List have no node (cannot divide)
     {
         newHead = nullptr;
     }
-    else if (head->next == nullptr) // list only have one node (cannot divide)
+    else if (head->next == nullptr) // List only have one node (cannot divide)
     {
         newHead = nullptr;
     }
-    else
+    else // List has more than two nodes
     {
+        // Traverse the list with two pointer,
+        // One traverse twice the length than the other to get the middle node in the list.
         current = head->next;
         middle = head;
 
-        if (current != nullptr) // list has more than two nodes
+        if (current != nullptr)
         {
             current = current->next;
         }
@@ -352,9 +356,9 @@ Node<T> *LinkedList<T>::mergeList(Node<T> *head, Node<T> *secondHead, bool (*com
     }
     else
     {
-        // Compare the first node
-        // Choose the smallest node
-        if (compare(head->data, secondHead->data)) // Compare
+        // Compare the first node of each list
+        // to choose the smallest node
+        if (compare(head->data, secondHead->data))
         {
             newHead = head;
             head = head->next;
@@ -369,7 +373,8 @@ Node<T> *LinkedList<T>::mergeList(Node<T> *head, Node<T> *secondHead, bool (*com
 
         while (head != nullptr && secondHead != nullptr)
         {
-            if (compare(head->data, secondHead->data)) // Compare
+            // Compare and choose smaller node
+            if (compare(head->data, secondHead->data))
             {
                 lastMerged->next = head;
                 lastMerged = head;
@@ -383,6 +388,7 @@ Node<T> *LinkedList<T>::mergeList(Node<T> *head, Node<T> *secondHead, bool (*com
             }
         }
 
+        // Let the list slides in if the other list is empty.
         if (head == nullptr)
         {
             lastMerged->next = secondHead;
@@ -412,9 +418,7 @@ Node<T> *LinkedList<T>::mergeList(Node<T> *head, Node<T> *secondHead)
     }
     else
     {
-        // Compare the first node
-        // Choose the smallest node
-        if (head->data < secondHead->data) // Compare
+        if (head->data < secondHead->data)
         {
             newHead = head;
             head = head->next;
@@ -429,7 +433,7 @@ Node<T> *LinkedList<T>::mergeList(Node<T> *head, Node<T> *secondHead)
 
         while (head != nullptr && secondHead != nullptr)
         {
-            if (head->data < secondHead->data) // Compare
+            if (head->data < secondHead->data)
             {
                 lastMerged->next = head;
                 lastMerged = head;
@@ -442,7 +446,7 @@ Node<T> *LinkedList<T>::mergeList(Node<T> *head, Node<T> *secondHead)
                 secondHead = secondHead->next;
             }
         }
-
+    
         if (head == nullptr)
         {
             lastMerged->next = secondHead;
@@ -464,11 +468,11 @@ void LinkedList<T>::recSortList(Node<T> *&head, bool (*compare)(T &a, T &b))
     {
         if (head->next != nullptr)
         {
-            this->divideList(head, otherHead);
-
+            this->divideList(head, otherHead); // Divide list and get two pointers pointing to each of the list
+            // Sort recursively of those lists.
             this->recSortList(head, compare);
             this->recSortList(otherHead, compare);
-            head = this->mergeList(head, otherHead, compare);
+            head = this->mergeList(head, otherHead, compare); // Merge the sorted list together.
         }
     }
 }

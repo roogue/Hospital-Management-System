@@ -5,6 +5,7 @@
 
 using namespace HMS;
 
+// Lookup arrays for patient statuses and treatment types
 const std::string HMS::PatientStatusLookUp[] = {
     "Admitted",
     "Discharged",
@@ -113,6 +114,8 @@ Treatment *Patient::getLatestTreatment()
 
     return this->treatments.getData(0);
 }
+
+// Static function to search for a patient by treatment type for searching algorithm
 bool Patient::searchTreatmentType(Patient &patient, std::string treatmentType)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();
@@ -124,6 +127,7 @@ bool Patient::searchTreatmentType(Patient &patient, std::string treatmentType)
     return false;
 };
 
+// Static function to compare two patients by their latest treatment appointment date for sorting algorithm
 bool Patient::compareTreatmentAppointment(Patient &patient, Patient &otherPatient)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();
@@ -141,6 +145,7 @@ bool Patient::compareTreatmentAppointment(Patient &patient, Patient &otherPatien
     return latestTreatment->getAppointment() < otherLatestTreatment->getAppointment();
 };
 
+// Static function to compare two patients by their latest treatment day of stay for sorting algorithm
 bool Patient::compareTreatmentDayOfStay(Patient &patient, Patient &otherPatient)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();
@@ -157,6 +162,8 @@ bool Patient::compareTreatmentDayOfStay(Patient &patient, Patient &otherPatient)
 
     return latestTreatment->getDayOfStay() < otherLatestTreatment->getDayOfStay();
 };
+
+// Static function to compare two patients by their latest treatment priority for sorting algorithm
 bool Patient::compareTreatmentPriority(Patient &patient, Patient &otherPatient)
 {
     HMS::Treatment *latestTreatment = patient.getLatestTreatment();

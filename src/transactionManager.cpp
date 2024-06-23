@@ -6,6 +6,7 @@
 
 using namespace Manager;
 
+// Static constants for error handling in TransactionManager
 const int Manager::TransactionManagerErrorPrefix = 200;
 const std::string Manager::TransactionManagerErrorMessage[] = {
     "No TM error occurred",
@@ -21,6 +22,7 @@ void TransactionManager::manageTransaction()
     using Manager::OptionsManageTransaction;
     using std::cout, std::endl;
 
+    // Reset transaction list at the start of management
     this->resetTransactionList();
 
     bool manageTransactionLoop = true;
@@ -29,10 +31,12 @@ void TransactionManager::manageTransaction()
         this->client.printer->printHeader();
         this->printTransactionList();
 
+        // Display menu options
         cout << "1) Discharge Patient" << endl
              << "2) Sort Transaction" << endl
              << "3) Exit Manage Transaction" << endl
              << "Selection: ";
+        // Get user selection
         int selection;
         ErrorCode err = this->client.inputHandler.getInt(selection, 1, 3);
         if (err != this->client.inputHandler.noErrorCode())
@@ -41,21 +45,26 @@ void TransactionManager::manageTransaction()
             continue;
         }
 
+        // Process user selection
         switch (selection)
         {
         case OptionsManageTransaction::DischargePatient:
         {
+            // Check if there are admitted patients to discharge
             if (this->client.patientManager->getPatientSize() == 0)
             {
                 this->client.errorHandler.addError(getErrorCode(NO_ADMITTED_PATIENT));
                 continue;
             }
 
+            // Get patient to discharge from the transaction list
             Iterator<HMS::Patient> iterator = this->transactionList.iterate();
             HMS::Patient *patient = this->client.patientManager->getPatient(*(iterator.getData()));
 
             this->client.printer->printHeader();
 
+            // Prompt for discharge date and update patient status,
+            // and set the treatment as completed.
             cout << "Discharge Date for Patient (" << patient->getName() << ") (DD/MM/YYYY): ";
             Handler::Date date;
             err = this->client.inputHandler.getDate(date);
@@ -73,16 +82,19 @@ void TransactionManager::manageTransaction()
             }
             patient->setStatus(HMS::PatientStatus::Discharged);
 
+            // Remove patient from transaction list
             this->transactionList.dequeue();
             break;
         }
         case OptionsManageTransaction::SortTransaction:
         {
+            // Manage sorting options for the transaction list
             this->manageSortTransaction();
             break;
         }
         case OptionsManageTransaction::ExitManageTransaction:
         {
+            // Exit the manage transaction loop
             manageTransactionLoop = false;
             break;
         }
@@ -101,12 +113,14 @@ void TransactionManager::manageSortTransaction()
         this->client.printer->printHeader();
         this->printTransactionList();
 
+        // Display sorting options
         cout << "Sort patients by " << endl
              << "1) Appointment Dates" << endl
              << "2) Length of Stay" << endl
              << "3) Priority" << endl
              << "Selection: ";
         int selection;
+        // Get user selection for sorting criteria
         err = this->client.inputHandler.getInt(selection, 1, 4);
         if (err != this->client.inputHandler.noErrorCode())
         {
@@ -117,6 +131,7 @@ void TransactionManager::manageSortTransaction()
         this->client.printer->printHeader();
         this->printTransactionList();
 
+        // Sort transaction list based on user selection
         switch (selection)
         {
         case OptionsSortTransaction::SortTransactionByAppointment:
@@ -149,6 +164,7 @@ void TransactionManager::printTransactionList()
     }
     else
     {
+        // Print formatted transaction list
         cout << setw(5) << left << "|ID"
              << setw(20) << left << "|Name"
              << setw(12) << left << "|Status"
@@ -166,6 +182,7 @@ void TransactionManager::printTransactionList()
                  << setw(19) << patient->getName().substr(0, 19) << "|"
                  << setw(11) << HMS::PatientStatusLookUp[patient->getStatus()] << "|";
 
+            // Print None, if the patient had completed his treatment
             if (latestTreatment == nullptr || latestTreatment->isCompleted())
             {
                 cout << setw(17) << "None"
@@ -202,6 +219,7 @@ void TransactionManager::resetTransactionList()
 {
     this->transactionList.resetQueue();
 
+    // Iterate through patient list and enqueue admitted patients
     Iterator<HMS::Patient> iterator = this->client.patientManager->getPatientListIterator();
     while (iterator.getData() != nullptr)
     {

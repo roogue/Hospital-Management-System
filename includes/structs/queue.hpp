@@ -18,7 +18,7 @@ void Queue<T>::dequeue()
         throw std::out_of_range("Queue is empty.");
     }
 
-    // Always delete the first node
+    // Always delete the first node.
     this->queue.deleteNode(0);
 };
 

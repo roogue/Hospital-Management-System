@@ -7,6 +7,7 @@
 
 using namespace Manager;
 
+// Error code definitions for PatientManager
 const int Manager::PatientManagerErrorPrefix = 100;
 const std::string Manager::PatientManagerErrorMessage[] = {
     "No PM error occurred",
@@ -30,9 +31,11 @@ void PatientManager::managePatients()
     bool managePatientsLoop = true;
     while (managePatientsLoop)
     {
+        // Print header and current patient list
         this->client.printer->printHeader();
         this->printPatientList(currentPatientList);
 
+        // Display menu options
         cout << "1) Add Patient" << endl
              << "2) View Patient" << endl
              << "3) Search Patients" << endl
@@ -47,6 +50,7 @@ void PatientManager::managePatients()
             continue;
         }
 
+        // Handle menu selection
         switch (selection)
         {
         case OptionsManagePatients::AddPatient:
@@ -134,6 +138,7 @@ void PatientManager::manageSearchPatient(LinkedList<HMS::Patient> &patientList)
         this->client.printer->printHeader();
         this->printPatientList();
 
+        // Display search options
         cout << "Search patients by " << endl
              << "1) Name" << endl
              << "2) Status" << endl
@@ -164,8 +169,7 @@ void PatientManager::manageSearchPatient(LinkedList<HMS::Patient> &patientList)
                 continue;
             }
 
-            // No error handling at search patient function
-            // because we've checked patientList length earlier
+            // Search patients by name
             this->patientList.searchNodes(patientList, HMS::Patient::searchName, name);
             break;
         }
@@ -185,6 +189,7 @@ void PatientManager::manageSearchPatient(LinkedList<HMS::Patient> &patientList)
                 continue;
             }
 
+            // Search patients by status
             this->patientList.searchNodes(patientList, HMS::Patient::searchStatus, HMS::PatientStatus(selection - 1));
             break;
         }
@@ -205,6 +210,8 @@ void PatientManager::manageSearchPatient(LinkedList<HMS::Patient> &patientList)
             }
 
             HMS::TreatmentType treatmentType = HMS::TreatmentType(selection - 1);
+            // In order to cover both preset treatment type and other treatment type,
+            // we need to convert preset type to string
             std::string formattedTreatmentType = "";
             if (treatmentType == HMS::TreatmentType::Other)
             {
@@ -221,6 +228,7 @@ void PatientManager::manageSearchPatient(LinkedList<HMS::Patient> &patientList)
                 formattedTreatmentType = HMS::TreatmentTypeLookUp[treatmentType];
             }
 
+            // Search patients by treatment type
             this->patientList.searchNodes(patientList, HMS::Patient::searchTreatmentType, formattedTreatmentType);
             break;
         }
@@ -240,6 +248,7 @@ void PatientManager::manageSortPatient(LinkedList<HMS::Patient> &patientList)
         this->client.printer->printHeader();
         this->printPatientList(patientList);
 
+        // Display sort options
         cout << "Sort patients by " << endl
              << "1) Appointment Dates" << endl
              << "2) Length of Stay" << endl
@@ -288,6 +297,7 @@ void PatientManager::editPatient(HMS::Patient &patient)
         this->client.printer->printHeader();
         this->printPatientDetails(patient);
 
+        // Display edit options
         cout << "1) Edit Name" << endl
              << "2) Edit Status" << endl
              << "3) Edit Treatment" << endl
@@ -343,6 +353,7 @@ void PatientManager::manageTreatments(HMS::Patient &patient)
         this->client.printer->printHeader();
         this->printTreatmentList(patient);
 
+        // Display treatment options
         cout << "1) Add Treatment" << endl
              << "2) View Treatment" << endl
              << "3) Exit from Manage Treatment" << endl
@@ -406,6 +417,7 @@ void PatientManager::editTreatment(HMS::Treatment &treatment, HMS::Patient &pati
         this->client.printer->printHeader();
         this->printTreatmentDetails(treatment);
 
+        // Display edit options
         cout << "1) Edit Treatment Type" << endl
              << "2) Edit Appointment Date" << endl
              << "3) Edit Length of Stay" << endl
